@@ -59,6 +59,7 @@ import {
 } from "../commands/codeFence";
 import toggleBlockType from "../commands/toggleBlockType";
 import Mermaid from "../extensions/Mermaid";
+import BPMN from "../extensions/BPMN";
 import Prism, { LANGUAGES } from "../extensions/Prism";
 import { MarkdownSerializerState } from "../lib/markdown/serializer";
 import isInCode from "../queries/isInCode";
@@ -202,6 +203,30 @@ export default class CodeFence extends Node {
             );
             actions.prepend(showDiagramButton);
           }
+
+          // For the BPMN language we add an extra button to toggle between
+          // source code and a rendered diagram view.
+          if (node.attrs.language === "bpmnjs") {
+            const showSourceButton = document.createElement("button");
+            showSourceButton.innerText = this.options.dictionary.showSource;
+            showSourceButton.type = "button";
+            showSourceButton.classList.add("show-source-button");
+            showSourceButton.addEventListener(
+              "click",
+              this.handleToggleBpmnDiagram
+            );
+            actions.prepend(showSourceButton);
+
+            const showDiagramButton = document.createElement("button");
+            showDiagramButton.innerText = this.options.dictionary.showDiagram;
+            showDiagramButton.type = "button";
+            showDiagramButton.classList.add("show-digram-button");
+            showDiagramButton.addEventListener(
+              "click",
+              this.handleToggleBpmnDiagram
+            );
+            actions.prepend(showDiagramButton);
+          }
         }
 
         return [
@@ -307,6 +332,32 @@ export default class CodeFence extends Node {
     view.dispatch(transaction);
   };
 
+  handleToggleBpmnDiagram = (event: InputEvent) => {
+    const { view } = this.editor;
+    const { tr } = view.state;
+    const element = event.currentTarget;
+    if (!(element instanceof HTMLButtonElement)) {
+      return;
+    }
+
+    const { top, left } = element.getBoundingClientRect();
+    const result = view.posAtCoords({ top, left });
+
+    if (!result) {
+      return;
+    }
+
+    const diagramId = element
+      .closest(".code-block")
+      ?.getAttribute("data-diagram-id");
+    if (!diagramId) {
+      return;
+    }
+
+    const transaction = tr.setMeta("bpmn", { toggleDiagram: diagramId });
+    view.dispatch(transaction);
+  };
+
   get plugins() {
     return [
       Prism({
@@ -314,6 +365,10 @@ export default class CodeFence extends Node {
         lineNumbers: this.showLineNumbers,
       }),
       Mermaid({
+        name: this.name,
+        isDark: this.editor.props.theme.isDark,
+      }),
+      BPMN({
         name: this.name,
         isDark: this.editor.props.theme.isDark,
       }),

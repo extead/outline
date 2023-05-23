@@ -1060,6 +1060,26 @@ mark {
   }
 }
 
+.bpmn-diagram-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: ${props.theme.codeBackground};
+  border-radius: 6px;
+  border: 1px solid ${props.theme.codeBorder};
+  padding: 8px;
+  user-select: none;
+  cursor: default;
+
+  * {
+    font-family: ${props.theme.fontFamily};
+  }
+
+  &.diagram-hidden {
+    display: none;
+  }
+}
+
 pre {
   display: block;
   overflow-x: auto;

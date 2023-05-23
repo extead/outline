@@ -8,6 +8,7 @@ import refractor from "refractor/core";
 export const LANGUAGES = {
   none: "None", // additional entry to disable highlighting
   bash: "Bash",
+  bpmnjs: "BPMN Diagram",
   css: "CSS",
   clike: "C",
   csharp: "C#",
