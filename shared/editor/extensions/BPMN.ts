@@ -3,6 +3,8 @@ import { Plugin, PluginKey, Transaction } from "prosemirror-state";
 import { findBlockNodes } from "prosemirror-utils";
 import { Decoration, DecorationSet } from "prosemirror-view";
 import { v4 as uuidv4 } from "uuid";
+import MoveCanvasModule from "diagram-js/lib/navigation/movecanvas"
+import ZoomScrollModule from "diagram-js/lib/navigation/zoomscroll"
 
 type BPMNState = {
   decorationSet: DecorationSet;
@@ -65,7 +67,11 @@ function getNewState({
         import("bpmn-js/lib/Viewer").then((module) => {
           var viewer = new module.default({
             width: '100%',
-            height: '100%'
+            height: '100%',
+            additionalModules: [
+              MoveCanvasModule,
+              ZoomScrollModule
+            ]
           });
 
           viewer.detach()
